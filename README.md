@@ -33,15 +33,15 @@
 
 主要贡献：
 
--基于 Java + LangChain4j 独立完成法规知识 RAG 链路，实现 PDF 解析、文本切分、DashScope Embedding
+- 基于 Java + LangChain4j 独立完成法规知识 RAG 链路，实现 PDF 解析、文本切分、DashScope Embedding
 与 Milvus 向量检索。
--面向现有 11 个审核 Agent 重构 Coordinator 执行控制，使用 Tokio JoinSet 与全局、文档两级 Semaphore
+- 面向现有 11 个审核 Agent 重构 Coordinator 执行控制，使用 Tokio JoinSet 与全局、文档两级 Semaphore
 管理并行任务、分级超时、调用预算和失败回收；固定响应压测中，120 条款的存活模型客户端峰值
 120→3，8 文档的在途调用峰值 24→12。
--将 SessionGraph 收敛为 RwLock<GraphState> ，结合 ReviewAttempt 生命周期和条款版本号支持并发增量
+- 将 SessionGraph 收敛为 RwLock<GraphState> ，结合 ReviewAttempt 生命周期和条款版本号支持并发增量
 读取；在 5 万次本地基准中，完整读取耗时降低 71.86%、未变版本轮询耗时降低 98.81%，2.2 万次并发快
 照检查的异常数 1,095→0。
--统一风险、引用与审计结果的状态流转及最终裁决，并处理重跑、超时、panic 和 SSE 取消时的资源回收；23
+- 统一风险、引用与审计结果的状态流转及最终裁决，并处理重跑、超时、panic 和 SSE 取消时的资源回收；23
 组故障场景、690 个独立进程验证通过。真实模型各三轮的前后版本对照中，新版 Confirmed 风险与最终结果
 均全字段一致。
 
