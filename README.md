@@ -33,10 +33,18 @@
 
 主要贡献：
 
-- 参与设计并实现 11 个专业审查 Agent，覆盖事实核查、流程合规、合同审查、风险识别等场景。
-- 实现 Coordinator Agent 调度流程，支持任务路由、并行执行、结果聚合。
-- 构建 RAG 知识检索链路，实现文档解析、向量化及 Milvus 检索。
-- 设计共享状态管理机制，解决多 Agent 协作过程中的上下文同步问题。
+-基于 Java + LangChain4j 独立完成法规知识 RAG 链路，实现 PDF 解析、文本切分、DashScope Embedding
+与 Milvus 向量检索。
+-面向现有 11 个审核 Agent 重构 Coordinator 执行控制，使用 Tokio JoinSet 与全局、文档两级 Semaphore
+管理并行任务、分级超时、调用预算和失败回收；固定响应压测中，120 条款的存活模型客户端峰值
+120→3，8 文档的在途调用峰值 24→12。
+-将 SessionGraph 收敛为 RwLock<GraphState> ，结合 ReviewAttempt 生命周期和条款版本号支持并发增量
+读取；在 5 万次本地基准中，完整读取耗时降低 71.86%、未变版本轮询耗时降低 98.81%，2.2 万次并发快
+照检查的异常数 1,095→0。
+-统一风险、引用与审计结果的状态流转及最终裁决，并处理重跑、超时、panic 和 SSE 取消时的资源回收；23
+组故障场景、690 个独立进程验证通过。真实模型各三轮的前后版本对照中，新版 Confirmed 风险与最终结果
+均全字段一致。
+
 
 🔗 Repository:
 https://github.com/dgut-hsd/ai-bid
